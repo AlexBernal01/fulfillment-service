@@ -1,25 +1,25 @@
-Fulfillment Service
+Servicio de Logística y Notificaciones
 
-ShopScale · Team 5 · Spring 2026
+ShopScale · Equipo 5 · Primavera 2026
 Benemérita Universidad Autónoma de Puebla — Facultad de Ciencias de la Computación
 
-What this is
+Qué es esto
 
 Microservicio encargado de la logística y notificaciones dentro de ShopScale. Su función principal es crear envíos después de una compra exitosa, asignar una paquetería, generar el número de guía, permitir el rastreo del paquete y mantener actualizado el estado del envío.
 
-También se encarga de enviar notificaciones al cliente sobre cambios importantes del pedido sin afectar el flujo principal de compra, usando procesamiento asíncrono.
+También se encarga de enviar notificaciones al cliente sobre cambios importantes del pedido sin afectar el flujo principal de compra, utilizando procesamiento asíncrono.
 
-Tech stack
+Tecnologías utilizadas
 
-Layer| Technology
+Capa| Tecnología
 Framework| FastAPI (Python)
-Database| PostgreSQL via Supabase
+Base de datos| PostgreSQL con Supabase
 ORM| SQLAlchemy
-Migrations| Alembic
-DB Driver| psycopg2-binary
-Async Tasks| BackgroundTasks
+Migraciones| Alembic
+Driver DB| psycopg2-binary
+Procesos asíncronos| BackgroundTasks
 
-Project structure
+Estructura del proyecto
 
 fulfillmentService/
 ├── alembic.ini
@@ -47,9 +47,9 @@ fulfillmentService/
     ├── middleware/
     └── routes/
 
-Local setup
+Configuración local
 
-1. Clone and create virtual environment
+1. Clonar el repositorio y crear entorno virtual
 
 git clone https://github.com/TU-USUARIO/fulfillmentService.git
 cd fulfillmentService
@@ -59,11 +59,11 @@ source venv/bin/activate
 # En Windows:
 venv\Scripts\activate
 
-2. Install dependencies
+2. Instalar dependencias
 
 pip install -r requirements.txt
 
-3. Configure environment
+3. Configurar variables de entorno
 
 Copiar ".env.example" a ".env" y colocar las credenciales de Supabase:
 
@@ -77,7 +77,7 @@ DATABASE_URL=postgresql://postgres:<password>@db.<project-ref>.supabase.co:5432/
 
 ⚠️ Nunca subir ".env" al repositorio.
 
-4. Run migrations
+4. Ejecutar migraciones
 
 alembic upgrade head
 
@@ -89,7 +89,7 @@ Esto crea las tablas principales:
 - notifications
 - logs
 
-5. Run the server
+5. Ejecutar el servidor
 
 uvicorn app.main:app --reload
 
@@ -97,11 +97,11 @@ API disponible en:
 
 http://localhost:8000
 
-Swagger docs:
+Documentación Swagger:
 
 http://localhost:8000/docs
 
-Database migrations
+Migraciones de base de datos
 
 # Aplicar migraciones pendientes
 alembic upgrade head
@@ -117,7 +117,7 @@ alembic downgrade base
 
 Siempre revisar las migraciones antes de aplicarlas.
 
-API contract
+Contrato API
 
 Especificación completa OpenAPI 3.0:
 
@@ -129,22 +129,22 @@ Para integración con otros equipos:
 
 docs/INTEGRATION.md
 
-Domain responsibilities
+Responsabilidades del dominio
 
-Owned by this service| NOT owned by this service
-Creación de envíos| Payment processing (Team 4)
-Asignación de paquetería| Cart lifecycle (Team 3)
-Generación de guía| Product inventory (Team 2)
-Rastreo de paquetes| Authentication (Team 1)
-Notificaciones al cliente| Checkout orchestration (Team 3)
+Este servicio sí maneja| Este servicio NO maneja
+Creación de envíos| Procesamiento de pagos (Equipo 4)
+Asignación de paquetería| Carrito de compras (Equipo 3)
+Generación de guía| Inventario de productos (Equipo 2)
+Rastreo de paquetes| Autenticación (Equipo 1)
+Notificaciones al cliente| Orquestación del checkout (Equipo 3)
 
-Key design decisions
+Decisiones importantes de diseño
 
-Async Processing
+Procesamiento asíncrono
 
 La generación de guías y el envío de notificaciones se manejan de forma asíncrona para no bloquear la confirmación de compra.
 
-Shipment Validation
+Validación de envíos
 
 Antes de crear un envío se valida:
 
@@ -152,11 +152,11 @@ Antes de crear un envío se valida:
 - que la dirección sea válida
 - que haya cobertura de envío
 
-Tracking Consistency
+Consistencia del rastreo
 
-Cada envío recibe un número de guía único y se guarda historial de eventos para rastreo.
+Cada envío recibe un número de guía único y se guarda historial de eventos para permitir trazabilidad completa.
 
-Status Control
+Control de estados
 
 No se permiten cambios de estado inválidos como:
 
@@ -164,6 +164,6 @@ Entregado → En proceso
 
 Solo se aceptan transiciones lógicas.
 
-Notification Safety
+Seguridad en notificaciones
 
-Si falla el envío de correo o notificación, el sistema guarda el intento para reintentar después.
+Si falla el envío de correo o notificación, el sistema guarda el intento para reintentar posteriormente.
